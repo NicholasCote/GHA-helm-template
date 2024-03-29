@@ -1,0 +1,14 @@
+replicaCount: <replicas>
+
+webapp:
+  name: <app_name>
+  group: <app_name>
+  path: <app_path>
+  tls:
+    fqdn: <app_name>.k8s.ucar.edu
+    secretName: incommon-account-key-<app_name>
+  container: 
+    image: <container_image>
+    port: <container_port>
+    memory: <memory>
+    cpu: <CPU>
