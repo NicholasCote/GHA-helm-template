@@ -33,3 +33,19 @@ jobs:
       - name: Push Podman image to Docker hub
         run: |
           podman push hub.k8s.ucar.edu/<harbor_project>/<container_image_name>:${{ steps.date.outputs.date }}
+      - name: Update Helm values.yaml
+        run: | 
+          sed -i '15d' app-helm-chart/values.yaml
+          echo "    image: hub.k8s.ucar.edu/<harbor_project>/<container_image_name>:${{ steps.date.outputs.date }}" >> app-helm-chart/values.yaml
+      - name: Update Helm Chart.yaml
+        run: | 
+          sed -i '24d' app-helm-chart/Chart.yaml
+          echo "appVersion: '${{ steps.date.outputs.date }}'" >> app-helm-chart/Chart.yaml
+      - name: Run python script to update version by 1
+        run: python app-helm-chart/update_ver.py
+      - name: Commit changes to main branch
+        run: |
+          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global user.name "$GITHUB_ACTOR"
+          git commit -a -m "Update Helm chart via GH Actions"
+          git push
